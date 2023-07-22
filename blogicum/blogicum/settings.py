@@ -129,8 +129,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = '/static/'
-
 STATICFILES_DIRS = [
     BASE_DIR / 'static_dev',
 ]
@@ -153,7 +151,7 @@ LOGIN_REDIRECT_URL = 'pages:homepage'
 
 LOGIN_URL = 'login'
 
-CSRF_FAILURE_VIEW = 'core.views.csrf_failure'
+CSRF_FAILURE_VIEW = 'pages.views.csrf_failure'
 
 INTERNAL_IPS = [
     '127.0.0.1',

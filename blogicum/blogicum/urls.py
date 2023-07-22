@@ -6,7 +6,6 @@ from django.views.generic.edit import CreateView
 from django.contrib.auth.views import PasswordResetConfirmView
 from django.conf import settings
 from django.conf.urls.static import static
-from core.handlers import server_error
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,8 +27,9 @@ urlpatterns = [
         name='password_reset_confirm'
     ),
 ]
-handler500 = server_error
 
+handler500 = 'pages.views.server_error'
+handler404 = 'pages.views.page_not_found'
 if settings.DEBUG:
     import debug_toolbar
     # Добавить к списку urlpatterns список адресов из приложения debug_toolbar:
