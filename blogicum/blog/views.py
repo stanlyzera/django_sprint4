@@ -28,9 +28,9 @@ class PostListView(ListView):
     def get_queryset(self):
         queryset = super().get_queryset()
         queryset = queryset.filter(
-            Q(is_published=True) &
-            Q(category__is_published=True) &
-            Q(pub_date__lte=timezone.now())
+            Q(is_published=True)
+            & Q(category__is_published=True)
+            & Q(pub_date__lte=timezone.now())
         )
         queryset = queryset.annotate(comments_count=Count('comments'))
         queryset = queryset.select_related('author', 'location', 'category')
@@ -50,14 +50,12 @@ class PostCreateView(LoginRequiredMixin, PostFormMixin, CreateView):
                        )
 
 
-class PostUpdateView(LoginRequiredMixin, PostFormMixin,  UpdateView):
+class PostUpdateView(LoginRequiredMixin, PostFormMixin, UpdateView):
 
     def dispatch(self, request, *args, **kwargs):
         post = get_object_or_404(Post, pk=kwargs['pk'])
-        if (
-            (request.user != post.author) or
-            (not self.request.user.is_authenticated)
-        ):
+        if ((request.user != post.author)
+           or (not self.request.user.is_authenticated)):
             return redirect('blog:post_detail', pk=post.pk)
         return super().dispatch(request, *args, **kwargs)
 
@@ -71,10 +69,8 @@ class PostDeleteView(LoginRequiredMixin, PostFormMixin, DeleteView):
 
     def dispatch(self, request, *args, **kwargs):
         post = get_object_or_404(Post, pk=kwargs['pk'])
-        if (
-            (request.user != post.author) or
-            (not self.request.user.is_authenticated)
-        ):
+        if ((request.user != post.author)
+           or (not self.request.user.is_authenticated)):
             return redirect('blog:post_detail', pk=post.pk)
         return super().dispatch(request, *args, **kwargs)
 
@@ -165,22 +161,19 @@ class ProfileDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         user = self.object
         posts = Post.objects.filter(
-            author=user
-            ).select_related('author', 'location', 'category')
+           author=user
+        ).select_related('author', 'location', 'category')
         paginator = Paginator(posts, self.paginate_by)
         page_number = self.request.GET.get('page')
         page_obj = paginator.get_page(page_number)
         context['page_obj'] = page_obj
         posts_with_comments = posts.annotate(comments_count=Count('comments'))
         comment_count = sum(
-            [post.comments_count for post in posts_with_comments]
-        )
-
+            [post.comments_count for post in posts_with_comments])
         for post in page_obj:
             post.comments_count = next(
                 (item.comments_count
-                 for item in posts_with_comments if item.pk == post.pk), 0
-            )
+                 for item in posts_with_comments if item.pk == post.pk), 0)
 
         context['comment_count'] = comment_count
         return context
@@ -211,10 +204,10 @@ class CategoryPostListView(ListView):
     def get_queryset(self):
         category_slug = self.kwargs['category_slug']
         return Post.objects.filter(
-            Q(category__slug=category_slug) &
-            Q(is_published=True) &
-            Q(category__is_published=True) &
-            Q(pub_date__lte=timezone.now())
+            Q(category__slug=category_slug)
+            & Q(is_published=True)
+            & Q(category__is_published=True)
+            & Q(pub_date__lte=timezone.now())
         )
 
     def get_context_data(self, **kwargs):
