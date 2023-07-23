@@ -162,7 +162,7 @@ class ProfileDetailView(DetailView):
         user = self.object
         posts = Post.objects.filter(
             author=user
-            ).select_related('author', 'location', 'category')
+        ).select_related('author', 'location', 'category')
         paginator = Paginator(posts, self.paginate_by)
         page_number = self.request.GET.get('page')
         page_obj = paginator.get_page(page_number)
