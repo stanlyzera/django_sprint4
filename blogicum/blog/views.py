@@ -161,8 +161,8 @@ class ProfileDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         user = self.object
         posts = Post.objects.filter(
-           author=user
-        ).select_related('author', 'location', 'category')
+            author=user
+            ).select_related('author', 'location', 'category')
         paginator = Paginator(posts, self.paginate_by)
         page_number = self.request.GET.get('page')
         page_obj = paginator.get_page(page_number)
