@@ -159,3 +159,5 @@ INTERNAL_IPS = [
 
 # settings.py
 LOGIN_REDIRECT_URL = 'blog:index'
+
+POSTS_PER_PAGE = 10

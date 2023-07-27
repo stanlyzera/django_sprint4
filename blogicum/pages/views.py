@@ -8,7 +8,6 @@ class AboutView(TemplateView):
 
 class RulesView(TemplateView):
     template_name = 'pages/rules.html'
-    from django.shortcuts import render
 
 
 def page_not_found(request, exception):
