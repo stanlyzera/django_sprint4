@@ -70,8 +70,8 @@ class PostListView(ListView):
             & Q(category__is_published=True)
             & Q(pub_date__lte=timezone.now())
         ).annotate(comments_count=Count('comments')
-                   ).order_by('-pub_date'
-                              ).select_related('author', 'location', 'category')
+                   ).order_by('-pub_date')
+        queryset = queryset.select_related('author', 'location', 'category')
         return queryset
 
 
@@ -160,15 +160,19 @@ class ProfileListView(ListView):
             query_set = query_set.filter(
                 Q(is_published=True)
                 & Q(pub_date__lte=timezone.now())
-                ).annotate(comments_count=Count('comments')
-                           ).order_by('-pub_date'
-                                      ).select_related('author', 'location', 'category')
+            ).annotate(comments_count=Count('comments')
+                       ).order_by('-pub_date')
+            query_set = query_set.select_related(
+                'author', 'location', 'category'
+            )
         else:
             query_set = query_set.filter(
                 Q(author=self.request.user)
-                ).annotate(comments_count=Count('comments')
-                           ).order_by('-pub_date'
-                                      ).select_related('author', 'location', 'category')
+            ).annotate(comments_count=Count('comments')
+                       ).order_by('-pub_date')
+            query_set = query_set.select_related(
+                'author', 'location', 'category'
+            )
         return query_set
 
     def get_context_data(self, **kwargs):
