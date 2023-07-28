@@ -24,7 +24,7 @@ post_urls = [
 urlpatterns = [
     path('', views.PostListView.as_view(), name='index'),
     path('posts/', include(post_urls)),
-    path('profile/<username>/',
+    path('profile/<str:username>/',
          views.ProfileListView.as_view(),
          name='profile'),
     path('account/edit/',
