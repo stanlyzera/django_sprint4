@@ -1,18 +1,17 @@
 from django.http import Http404
-from django.urls import reverse_lazy, reverse
-from django.utils import timezone
 from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse, reverse_lazy
+from django.utils import timezone
 from django.views.generic import (
     CreateView, DeleteView, DetailView, ListView, UpdateView
 )
-
+from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.db.models import Count, Q
 
-from .forms import PostForm, CommentForm
-from .models import Post, Category, Comment
-from django.conf import settings
+from .forms import CommentForm, PostForm
+from .models import Category, Comment, Post
 
 
 class PostFormMixin:
@@ -38,10 +37,6 @@ class CommentUpdateMixin:
         post = self.object.post
         return reverse('blog:post_detail', kwargs={'post_pk': post.pk})
 
-    def handle_no_permission(self):
-        post_pk = self.kwargs.get('post_pk')
-        return redirect('blog:post_detail', post_pk=post_pk)
-
 
 class PostUpdateDeleteMixin:
     pk_url_kwarg = 'post_pk'
@@ -55,9 +50,9 @@ class PostUpdateDeleteMixin:
 
 class QuerySetOptimizationMixin:
     def get_queryset(self):
-        queryset = super().get_queryset()
-        queryset = queryset.select_related('author', 'location', 'category')
-        return queryset
+        return Post.objects.select_related(
+            'author', 'location', 'category'
+        ).all()
 
 
 class PostListView(QuerySetOptimizationMixin, ListView):
@@ -176,6 +171,7 @@ class ProfileListView(QuerySetOptimizationMixin, ListView):
             query_set = query_set.filter(
                 Q(is_published=True)
                 & Q(pub_date__lte=timezone.now())
+                & Q(category__is_published=True)
             )
         return query_set
 
@@ -213,7 +209,7 @@ class CategoryPostListView(QuerySetOptimizationMixin, ListView):
             slug=self.kwargs['category_slug'],
             is_published=True
         )
-        return Post.objects.filter(
+        return super().get_queryset().filter(
             Q(category__slug=category_slug)
             & Q(is_published=True)
             & Q(category__is_published=True)
