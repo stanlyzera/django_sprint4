@@ -1,3 +1,5 @@
+### Блогикум
+Блогикум - это прототип блога, позволяющий публиковать свои посты в определенных категориях, просматривать публикации других людей, а также оставлять комментарии!
 ### Технологии:
 
 [![pre-commit](https://img.shields.io/badge/Python-3.10-3776AB?logo=python&logoColor=white)](https://www.python.org/downloads/release/python-3111/) 
